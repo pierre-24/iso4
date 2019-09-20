@@ -24,5 +24,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3'
     ],
+    package_data={'iso4': ['LTWA_20170914.json', 'LTWA_20170914.tsv']},
     install_requires=pkgs,
 )
