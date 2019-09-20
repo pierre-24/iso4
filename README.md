@@ -2,6 +2,8 @@
 
 Implementation of [ISO 4](https://www.iso.org/standard/3569.html) (Rules for the abbreviation of title words and titles of publications) / [CIEPS LTWA](http://www.issn.org/services/online-services/access-to-the-ltwa/) (ISSN International Centre's List of Title Word Abbreviations) as a Python library.
 
+*Forked from its original implementation by [adlpr](https://github.com/adlpr/) available [here](https://github.com/adlpr/iso4) so that it looks more like a package.*
+
 ## Usage
 
 ```python
