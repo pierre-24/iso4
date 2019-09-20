@@ -1,0 +1,16 @@
+dist: trusty
+
+language: python
+
+python:
+  - 3.6
+
+git:
+  depth: 1
+
+install:
+  - pip3 install pipenv
+
+script:
+  - pipenv install --dev --ignore-pipfile
+  - flake8 iso4 --max-line-length=120
