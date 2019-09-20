@@ -1,11 +1,16 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
-import os, csv, json, unicodedata, string, nltk
+import os
+import csv
+import json
+import unicodedata
+import string
 import regex as re
 from nltk.stem.wordnet import WordNetLemmatizer
 
 WNL = WordNetLemmatizer()
+
 
 def abbreviate(title, periods=True, disambiguation_langs=set()):
     """
@@ -54,7 +59,7 @@ def abbreviate(title, periods=True, disambiguation_langs=set()):
         word_lemma = WNL.lemmatize(word_norm)
         word_candidates = (word_norm, word_lemma) if word_norm != word_lemma else (word_norm,)
 
-        word_abbr = ""
+        word_abbr = ''
         capitalization = __get_capitalization(orig_word)
 
         for word in word_candidates:
@@ -67,7 +72,8 @@ def abbreviate(title, periods=True, disambiguation_langs=set()):
                     word_abbr = CONFLICT_MAP[FULLWORD][word][possible_langs.pop()]
                     break
                 else:
-                    raise Exception("Ambiguous word in title: {}; must disambiguate between langs: {}".format(word, ', '.join(sorted(allowed_langs))))
+                    raise Exception('Ambiguous word in title: {}; must disambiguate between langs: {}'.format(
+                        word, ', '.join(sorted(allowed_langs))))
             if not word_abbr and PREFIX in CONFLICT_MAP:
                 # prefix conflicts
                 for prefix in sorted(CONFLICT_MAP[PREFIX].keys()):
@@ -77,7 +83,9 @@ def abbreviate(title, periods=True, disambiguation_langs=set()):
                         if len(possible_langs) == 1:
                             word_abbr = CONFLICT_MAP[PREFIX][word][possible_langs.pop()]
                         else:
-                            raise Exception("Ambiguous prefix ({}) in title word: {}; must disambiguate between langs: {}".format(prefix, word, ', '.join(sorted(allowed_langs))))
+                            raise Exception(
+                                'Ambiguous prefix ({}) in title word: {}; must disambiguate between langs: {}'.format(
+                                    prefix, word, ', '.join(sorted(allowed_langs))))
             if not word_abbr and SUFFIX in CONFLICT_MAP:
                 # suffix conflicts
                 for suffix in sorted(CONFLICT_MAP[SUFFIX].keys()):
@@ -87,7 +95,10 @@ def abbreviate(title, periods=True, disambiguation_langs=set()):
                         if len(possible_langs) == 1:
                             word_abbr = CONFLICT_MAP[SUFFIX][word][possible_langs.pop()]
                         else:
-                            raise Exception("Ambiguous suffix ({}) in title word: {}; must disambiguate between langs: {}".format(suffix, word, ', '.join(sorted(allowed_langs))))
+                            raise Exception(
+                                'Ambiguous suffix ({}) in title word: {}; must disambiguate between langs: {}'.format(
+                                    suffix, word, ', '.join(sorted(allowed_langs))))
+
             if not word_abbr and INFIX in CONFLICT_MAP:
                 # infix conflicts
                 for infix in sorted(CONFLICT_MAP[INFIX].keys()):
@@ -97,8 +108,11 @@ def abbreviate(title, periods=True, disambiguation_langs=set()):
                         if len(possible_langs) == 1:
                             word_abbr = CONFLICT_MAP[INFIX][word][possible_langs.pop()]
                         else:
-                            raise Exception("Ambiguous infix ({}) in title word: {}; must disambiguate between langs: {}".format(infix, word, ', '.join(sorted(allowed_langs))))
-            if word_abbr: break
+                            raise Exception(
+                                'Ambiguous infix ({}) in title word: {}; must disambiguate between langs: {}'.format(
+                                    infix, word, ', '.join(sorted(allowed_langs))))
+            if word_abbr:
+                break
             # done with conflict checks
 
             # check full word list
@@ -123,10 +137,11 @@ def abbreviate(title, periods=True, disambiguation_langs=set()):
                     if infix in word:
                         word_abbr = LTWA[INFIX][infix]
                         break
-            if word_abbr: break
+            if word_abbr:
+                break
 
         # done, finalize output with proper parameters
-        if word_abbr in ("", NOT_ABBREVIATED):
+        if word_abbr in ('', NOT_ABBREVIATED):
             word_abbr = __finalize_output(word, capitalization, periods=False)
         else:
             word_abbr = __finalize_output(word_abbr, capitalization, periods)
@@ -137,9 +152,9 @@ def abbreviate(title, periods=True, disambiguation_langs=set()):
 
 
 LTWA = {}
-LTWA_VERSION = "20170914"
+LTWA_VERSION = '20170914'
 
-NOT_ABBREVIATED = "n.a."
+NOT_ABBREVIATED = 'n.a.'
 
 STOPWORDS = set([''])
 CONFLICT_MAP = {}
@@ -153,20 +168,21 @@ LABEL_LTWA, LABEL_MULTIWORD, LABEL_CONFLICT = 'lmc'
 
 LOWERCASE, UPPERCASE, TITLECASE = 'lut'
 
+
 def __initialize_ltwa():
     global LTWA, CONFLICT_MAP, MULTI_WORD_TERMS, STOPWORDS, TOKENIZER_REGEX
-    json_filepath = os.path.join(os.path.dirname(__file__), "LTWA_{}.json".format(LTWA_VERSION))
+    json_filepath = os.path.join(os.path.dirname(__file__), 'LTWA_{}.json'.format(LTWA_VERSION))
     try:
         # Read JSON.
-        with open(json_filepath,'r') as inf:
+        with open(json_filepath, 'r') as inf:
             inf_json = json.load(inf)
             LTWA = inf_json[LABEL_LTWA]
             MULTI_WORD_TERMS = inf_json[LABEL_MULTIWORD]
             CONFLICT_MAP = inf_json[LABEL_CONFLICT]
-    except:
+    except Exception:
         # Create JSON from TSV.
-        tsv_filepath = os.path.join(os.path.dirname(__file__), "LTWA_{}.tsv".format(LTWA_VERSION))
-        with open(tsv_filepath,'r') as inf:
+        tsv_filepath = os.path.join(os.path.dirname(__file__), 'LTWA_{}.tsv'.format(LTWA_VERSION))
+        with open(tsv_filepath, 'r') as inf:
             # Make list of conflict words to gather information about on pass 2
             conflict_words = set()
             tsv = csv.reader(inf, delimiter='\t')
@@ -203,20 +219,21 @@ def __initialize_ltwa():
                     for lang in langs.split(','):
                         CONFLICT_MAP[type][word][lang.strip()] = abbr
         MULTI_WORD_TERMS = sorted(list(set(MULTI_WORD_TERMS)))
-        with open(json_filepath,'w') as outf:
+        with open(json_filepath, 'w') as outf:
             json.dump({
-                          LABEL_LTWA : LTWA,
-                          LABEL_CONFLICT : CONFLICT_MAP,
-                          LABEL_MULTIWORD : MULTI_WORD_TERMS
+                          LABEL_LTWA: LTWA,
+                          LABEL_CONFLICT: CONFLICT_MAP,
+                          LABEL_MULTIWORD: MULTI_WORD_TERMS
                       }, outf)
 
     # Set of stopwords from txt
-    sw_filepath = os.path.join(os.path.dirname(__file__), "stopwords.txt")
-    with open(sw_filepath,'r') as inf:
+    sw_filepath = os.path.join(os.path.dirname(__file__), 'stopwords.txt')
+    with open(sw_filepath, 'r') as inf:
         STOPWORDS = set([unicodedata.normalize('NFKD', line.strip()) for line in inf.readlines()])
 
     # Tokenizer regex from multi words
-    TOKENIZER_REGEX = re.compile("({}|\\s+)".format('|'.join(["(?:^|\\s){}(?:\\s|$)".format(w) for w in MULTI_WORD_TERMS])), flags=re.I)
+    TOKENIZER_REGEX = re.compile(
+        '({}|\\s+)'.format('|'.join(['(?:^|\\s){}(?:\\s|$)'.format(w) for w in MULTI_WORD_TERMS])), flags=re.I)
 
 
 def __get_type(word):
@@ -227,6 +244,7 @@ def __get_type(word):
         return PREFIX
     else:
         return FULLWORD
+
 
 def __get_capitalization(word):
     if word == word.upper():
@@ -239,13 +257,15 @@ def __get_capitalization(word):
         return TITLECASE
     return LOWERCASE
 
+
 def __normalize_word(word):
     """Strip hyphens, other punctuation, lower, normalize NFKD."""
     parts = []
     for part in word.split(' '):
-        part = re.sub(r"(^\-|\p{P}+$)", '', part).strip()
+        part = re.sub(r'(^\-|\p{P}+$)', '', part).strip()
         parts.append(unicodedata.normalize('NFKD', part.lower()))
     return ' '.join(parts).strip()
+
 
 def __normalize_abbr(abbr):
     """Strip hyphens, period, lower, normalize NFKD (if not "n.a.")."""
@@ -255,6 +275,7 @@ def __normalize_abbr(abbr):
     for part in abbr.split(' '):
         parts.append(unicodedata.normalize('NFKD', part.strip('- ').rstrip('.').lower()))
     return ' '.join(parts)
+
 
 def __finalize_output(word, capitalization, periods):
     """Modify output word according to capitalization and period rules."""
@@ -268,5 +289,6 @@ def __finalize_output(word, capitalization, periods):
             part += '.'
         parts.append(part)
     return ' '.join(parts)
+
 
 __initialize_ltwa()
