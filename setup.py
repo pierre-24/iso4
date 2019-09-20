@@ -1,5 +1,3 @@
-import iso4
-
 from setuptools import setup
 try:  # for pip >= 10
     from pip._internal.req import parse_requirements
@@ -15,11 +13,11 @@ for pkg in parse_requirements('requirements.txt', session=False):
         pkgs.append(str(pkg.req))
 
 setup(
-    name=iso4.__name__,
+    name='iso4',
     packages=['iso4'],
-    version=iso4.__version__,
-    author=iso4.__author__,
-    description=osmipy.__doc__,
+    version='0.1',
+    author='adlpr',
+    description='Implementation of ISO 4',
     classifiers=[
         'Environment :: Scientific',
         'Operating System :: OS Independent',
