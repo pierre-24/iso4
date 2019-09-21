@@ -6,6 +6,15 @@ Implementation of [ISO 4](https://www.iso.org/standard/3569.html) (Rules for the
 
 ## Usage
 
+Before first usage, you need to run
+
+```python
+>>> import nltk
+>>> nltk.download("wordnet")
+```
+
+Then,
+
 ```python
 >>> from iso4 import abbreviate
 
