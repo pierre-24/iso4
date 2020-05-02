@@ -34,6 +34,7 @@ setup(
     ],
 
     packages=find_packages(),
+    package_data={'iso4': ['LTWA_20170914.json', 'LTWA_20170914.tsv', 'stopwords.txt']},
     python_requires='>=3.5',
 
     # requirements
